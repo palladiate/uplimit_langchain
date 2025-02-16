@@ -15,7 +15,7 @@ load_dotenv('.env.dev')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 # Load PDF file
-loader = PyMuPDFLoader('pil.3474.pdf')
+loader = PyMuPDFLoader('levothyroxine.pdf')
 data = loader.load()
 
 # Split and Embed
@@ -26,20 +26,21 @@ vector_store = FAISS.from_documents(documents=splits, embedding=embedding_model)
 
 # Create Prompt
 qna_prompt = """
-    You are an expert medical assistant who is able to read information from medicine leaflets
-    and use that to answer any questions that are asked of you.
-    You explain things simply and in an easy to understand manner.
-    If you still can't figure out the answer, just say that you're unable to answer.
-
-    You are provided with the Question and Context below to help you answer.
-
+    You are a trained pharmacist who is an expert in reading medical documentation
+    and will answer any questions related to prescription medication you know. You 
+    like to explain things simply for laymen and non-medical questioners. You are 
+    comfortable to say you do not know if you cannot find the answer. You do your 
+    best to find the exact references that lead you to believe the answer is true.
+    
+    You will be given a question and a context to guide your answer.
+    
     Question: {question}
     Context: {context}
-    Answer:
+    Answers
 """
 qna_prompt_template = ChatPromptTemplate.from_messages(
         [
-            SystemMessagePromptTemplate.from_template("You are a helpful AI assistant"),
+            SystemMessagePromptTemplate.from_template("You are a helpful AI pharmacist"),
             HumanMessagePromptTemplate.from_template(qna_prompt),
         ]
 )
